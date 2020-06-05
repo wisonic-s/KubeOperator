@@ -29,9 +29,9 @@ function build_and_save_images() {
     cd ${PROJECT_DIR}
     docker-compose build
     cd ${PROJECT_DIR}/core
-    docker image build -t kube-operator/core:2.6.0
+    docker image build -t kube-operator/core:2.6.0 .
     cd ${PROJECT_DIR}/ui
-    docker image build -t kube-operator/ui:2.6.0
+    docker image build -t kube-operator/ui:2.6.0 .
 
     echo ">>> 开始保存镜像"
     for image in ${images};do
