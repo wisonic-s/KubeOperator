@@ -5,65 +5,83 @@ source ${BASE_DIR}/utils.sh
 validationPassed=1
 
 echo -ne "root 用户检测 \t\t........................ "
-isRoot=`id -u -n | grep root | wc -l`
-if [ "x$isRoot" == "x1" ];then
+isRoot=$(id -u -n | grep root | wc -l)
+if [ "x$isRoot" == "x1" ]; then
   echo "[OK]"
 else
   echo "[ERROR] 请用 root 用户执行安装脚本"
   validationPassed=0
 fi
 
-
 #操作系统检测
 echo -ne "操作系统检测 \t\t........................ "
-if [ -f /etc/redhat-release ];then
-  osVersion=`cat /etc/redhat-release | grep -oE '[0-9]+\.[0-9]+'`
-  majorVersion=`echo $osVersion | awk -F. '{print $1}'`
-  minorVersion=`echo $osVersion | awk -F. '{print $2}'`
-  if [ "x$majorVersion" == "x" ];then
+if [ -f /etc/redhat-release ]; then
+  osVersion=$(cat /etc/redhat-release | grep -oE '[0-9]+\.[0-9]+')
+  majorVersion=$(echo $osVersion | awk -F. '{print $1}')
+  minorVersion=$(echo $osVersion | awk -F. '{print $2}')
+  if [ "x$majorVersion" == "x" ]; then
     echo "[ERROR] 操作系统类型版本不符合要求，请使用 CentOS 7.4 / 7.5 / 7.6 / 7.7 / 7.8 64 位版本"
     validationPassed=0
   else
-    if [[ $majorVersion == 7 ]] && [[ $minorVersion > 3 ]];then
-      is64bitArch=`uname -m`
-      if [ "x$is64bitArch" == "xx86_64" ];then
-         echo "[OK]"
+    os=$(cat /etc/redhat-release | awk -F. '{print $1}')
+    euloros='EulerOS'
+    centos='CentOS'
+    redhat='Red hat'
+    if [[ $os == *$euloros* ]]; then
+      if [[ $majorVersion == 2 ]] && [[ $minorVersion -ge 0 ]]; then
+        is64bitArch=$(uname -m)
+        if [ "x$is64bitArch" == "xx86_64" ]; then
+          echo "[OK]"
+        else
+          echo "[ERROR] 操作系统必须是 64 位的，32 位的不支持"
+          validationPassed=0
+        fi
       else
-         echo "[ERROR] 操作系统必须是 64 位的，32 位的不支持"
-         validationPassed=0
+        echo "[ERROR] 操作系统类型版本不符合要求，请使用 EulerOS 2.0 / 2.1 / 2.2 / 2.3 / 2.4 / 2.5 版本"
+        validationPassed=0
+      fi
+    elif [[ $os == *$centos* ]] || [[ $os == *$redhat* ]]; then
+      if [[ $majorVersion == 7 ]] && [[ $minorVersion -gt 3 ]]; then
+        is64bitArch=$(uname -m)
+        if [ "x$is64bitArch" == "xx86_64" ]; then
+          echo "[OK]"
+        else
+          echo "[ERROR] 操作系统必须是 64 位的，32 位的不支持"
+          validationPassed=0
+        fi
+      else
+        echo "[ERROR]1 操作系统类型版本不符合要求，请使用 CentOS 7.4 / 7.5 / 7.6 / 7.7 / 7.8 版本"
+        validationPassed=0
       fi
     else
-      echo "[ERROR] 操作系统类型版本不符合要求，请使用 CentOS 7.4 / 7.5 / 7.6 / 7.7 / 7.8 版本"
+      echo "[ERROR]2 操作系统类型版本不符合要求，请使用 CentOS 7.4 / 7.5 / 7.6 / 7.7 / 7.8 版本"
       validationPassed=0
     fi
   fi
 else
-    echo "[ERROR] 操作系统类型版本不符合要求，请使用 CentOS 7.4 / 7.5 / 7.6 / 7.7 / 7.8 版本"
-    validationPassed=0
+  echo "[ERROR]3 操作系统类型版本不符合要求，请使用 CentOS 7.4 / 7.5 / 7.6 / 7.7 / 7.8 版本"
+  validationPassed=0
 fi
-
 
 #CPU检测
 echo -ne "CPU检测 \t\t........................ "
-processor=`cat /proc/cpuinfo| grep "processor"| wc -l`
-if [ $processor -lt 2 ];then
+processor=$(cat /proc/cpuinfo | grep "processor" | wc -l)
+if [ $processor -lt 2 ]; then
   echo "[ERROR] CPU 小于 2核，KubeOperator 所在机器的 CPU 需要至少 2核"
   validationPassed=0
 else
   echo "[OK]"
 fi
 
-
 #内存检测
 echo -ne "内存检测 \t\t........................ "
-memTotal=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
-if [ $memTotal -lt 7500000 ];then
+memTotal=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}')
+if [ $memTotal -lt 7500000 ]; then
   echo "[ERROR] 内存小于 8G，KubeOperator 所在机器的内存需要至少 8G"
   validationPassed=0
 else
   echo "[OK]"
 fi
-
 
 #磁盘剩余空间检测
 echo -ne "磁盘剩余空间检测 \t........................ "
@@ -72,18 +90,18 @@ path="/opt"
 IFSOld=$IFS
 IFS=$'\n'
 lines=$(df)
-for line in ${lines};do
-  linePath=`echo ${line} | awk -F' ' '{print $6}'`
-  lineAvail=`echo ${line} | awk -F' ' '{print $4}'`
+for line in ${lines}; do
+  linePath=$(echo ${line} | awk -F' ' '{print $6}')
+  lineAvail=$(echo ${line} | awk -F' ' '{print $4}')
   if [ "${linePath:0:1}" != "/" ]; then
     continue
   fi
-  
+
   if [ "${linePath}" == "/" ]; then
     rootAvail=${lineAvail}
     continue
   fi
-  
+
   pathLength=${#path}
   if [ "${linePath:0:${pathLength}}" == "${path}" ]; then
     pathAvail=${lineAvail}
@@ -92,8 +110,7 @@ for line in ${lines};do
 done
 IFS=$IFSOld
 
-if test -z "${pathAvail}"
-then
+if test -z "${pathAvail}"; then
   pathAvail=${rootAvail}
 fi
 
