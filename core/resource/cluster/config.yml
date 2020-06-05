@@ -330,6 +330,14 @@ templates:
                 - "7.5"
                 - "7.6"
                 - "7.7"
+            - name: EulerOS
+              version:
+                - "2.0"
+                - "2.1"
+                - "2.2"
+                - "2.3"
+                - "2.4"
+                - "2.5"
           node_vars: []
           requires:
             nodes_require:
@@ -374,6 +382,14 @@ templates:
                 - "7.5"
                 - "7.6"
                 - "7.7"
+            - name: EulerOS
+              version:
+                - "2.0"
+                - "2.1"
+                - "2.2"
+                - "2.3"
+                - "2.4"
+                - "2.5"
           node_vars: []
           requires:
             nodes_require:
@@ -424,6 +440,14 @@ templates:
                 - "7.5"
                 - "7.6"
                 - "7.7"
+            - name: EulerOS
+              version:
+                - "2.0"
+                - "2.1"
+                - "2.2"
+                - "2.3"
+                - "2.4"
+                - "2.5"
           node_vars: []
           requires:
             nodes_require:
@@ -468,6 +492,14 @@ templates:
                 - "7.5"
                 - "7.6"
                 - "7.7"
+            - name: EulerOS
+              version:
+                - "2.0"
+                - "2.1"
+                - "2.2"
+                - "2.3"
+                - "2.4"
+                - "2.5"
           node_vars: []
           requires:
             nodes_require:
