@@ -1,3 +1,4 @@
+# 本分支是为了使 KubeOperator 能够运行在 Arm64 架构的服务器上所创建的分支，是通过替换部分组件来达到这一目的的，仅供学习研究使用。
 # KubeOperator - 从这里开启您的 Kubernetes 之旅
 
 [![License](http://img.shields.io/badge/license-apache%20v2-blue.svg)](https://github.com/KubeOperatpr/KubeOperatpr/blob/master/LICENSE)

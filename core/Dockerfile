@@ -1,22 +1,25 @@
-FROM registry.fit2cloud.com/public/python:v3
+FROM python:3.6-alpine
 MAINTAINER Fit2Openshift Team <support@fit2cloud.com>
+
 WORKDIR /opt/kubeOperator-api
 
-RUN echo -e "[mysql]\nname=mysql\nbaseurl=https://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql57-community-el6/\ngpgcheck=0\nenabled=1" > /etc/yum.repos.d/mysql.repo
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 COPY ./requirements /tmp/requirements
-RUN cd /tmp/requirements && yum -y install epel-release && yum -y install $(cat rpm_requirements.txt)
+RUN cd /tmp/requirements && apk add --no-cache $(cat apk_requirements.txt)
+
 RUN cd /tmp/requirements && \
      pip install --upgrade pip setuptools -i https://mirrors.aliyun.com/pypi/simple/ && \
      pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ || pip install -r requirements.txt
 RUN test -f /root/.ssh/id_rsa || ssh-keygen -f /root/.ssh/id_rsa -t rsa -P ''
-RUN echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null" > /root/.ssh/config
-COPY ./requirements/install_terraform.sh /opt/kubeOperator-api
-RUN bash /opt/kubeOperator-api/install_terraform.sh
-RUN yum -y install crontabs
+RUN mkdir -p /root/.ssh && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null" > /root/.ssh/config
+
 COPY . /opt/kubeOperator-api
+
 RUN echo > config.yml
-RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-RUN echo "Asia/Shanghai" >> /etc/timezone
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone && \
+    apk del tzdata
 
 ENV LANG=zh_CN.UTF-8
 ENV LC_ALL=zh_CN.UTF-8

@@ -1,0 +1,1 @@
+unzip terraform  vim tiff-dev jpeg-dev libzip-dev freetype-dev lcms2-dev libwebp-dev tcl-dev tk-dev sshpass openldap-dev mysql-dev libffi libffi-dev openssh-client redis supervisor git patch apache2-utils build-base python3-dev curl

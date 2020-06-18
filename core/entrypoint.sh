@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 function cleanup()
 {
     local pids=`jobs -p`
@@ -13,8 +13,8 @@ if [[ "$1" != "" ]];then
 fi
 
 trap cleanup EXIT
-if [[ "$1" == "bash" ]];then
-    bash
+if [[ "$1" == "sh" ]];then
+    sh
 else
     python kubeops.py start ${service}
 fi

@@ -78,7 +78,7 @@ services:
 
   mysql:
     container_name: kubeops_mysql
-    image: mysql:5
+    image: mariadb:
     command: [
               '--character-set-server=utf8',
               '--default-time-zone=+8:00'
